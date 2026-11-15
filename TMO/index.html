@@ -22,12 +22,12 @@ const save=(k,v)=>{storage.setItem(k,v);status('Saved on this device');};const m
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const schedule=$('schedule');
 for(let i=1;i<=8;i++){
-if(i===6||i===7||i===8){const tr=document.createElement('tr');tr.innerHTML='<th colspan="6">'+(i===6?'Saturday':i===7?'Sunday':'Ideas to add / To Do')+'</th>';schedule.appendChild(tr);}
+if(i===6||i===7){const tr=document.createElement('tr');tr.id='weekendHeader'+i;tr.contentEditable='true';tr.innerHTML='<th>'+(i===6?'Saturday':'Sunday')+'</th><th>6–8</th><th>9–11</th><th>12–2</th><th>3–5</th><th>6–8</th>';schedule.appendChild(tr);}else if(i===8){const tr=document.createElement('tr');tr.innerHTML='<th colspan="6">Ideas to add / To Do</th>';schedule.appendChild(tr);}
 const tr=document.createElement('tr');tr.id='row'+i;tr.contentEditable='true';tr.innerHTML=Array.from({length:6},(_,j)=>'<td>'+(i===8&&j===0?'[ ] Follow our Facebook pages':'')+'</td>').join('');schedule.appendChild(tr);
 }
-function restoreRows(){document.querySelectorAll('[id^="row"]').forEach(el=>{const v=safeGet(el.id);if(v!==null)el.innerHTML=v;});}
+function restoreRows(){document.querySelectorAll('[id^="row"], [id^="weekendHeader"]').forEach(el=>{const v=safeGet(el.id);if(v!==null)el.innerHTML=v;});}
 restoreRows();
-document.querySelectorAll('[id^="row"]').forEach(el=>el.addEventListener('input',()=>save(el.id,el.innerHTML)));
+document.querySelectorAll('[id^="row"], [id^="weekendHeader"]').forEach(el=>el.addEventListener('input',()=>save(el.id,el.innerHTML)));
 const validTabs=['organise','notes','editor','scratchpad'];function openTab(tab){if(!validTabs.includes(tab))tab='organise';document.querySelectorAll('[data-tab]').forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false');if(active)b.scrollIntoView({block:'nearest',inline:'nearest'});});document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===tab));save('tmoActiveTab',tab);}document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>openTab(b.dataset.tab)));openTab(safeGet('tmoActiveTab')||'organise');
 const editor=$('editorBody'),scratch=$('scratchpadBody');
 editor.innerHTML=safeGet('editorContent')||editor.innerHTML;scratch.value=safeGet('scratchpadContent')||'';
